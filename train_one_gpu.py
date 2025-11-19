@@ -115,20 +115,21 @@ class NpyDataset(Dataset):
 
 
 # %% sanity test of dataset class
-tr_dataset = NpyDataset("data/npy/CT_Abd")
-tr_dataloader = DataLoader(tr_dataset, batch_size=8, shuffle=True)
+root = '/mnt/Public/AbdomenCT-1K/'
+tr_dataset = NpyDataset(root + "npy/CT_Abd")
+tr_dataloader = DataLoader(tr_dataset, batch_size=2, shuffle=True)
 for step, (image, gt, bboxes, names_temp) in enumerate(tr_dataloader):
     print(image.shape, gt.shape, bboxes.shape)
     # show the example
     _, axs = plt.subplots(1, 2, figsize=(25, 25))
-    idx = random.randint(0, 7)
+    idx = random.randint(0, 1)
     axs[0].imshow(image[idx].cpu().permute(1, 2, 0).numpy())
     show_mask(gt[idx].cpu().numpy(), axs[0])
     show_box(bboxes[idx].numpy(), axs[0])
     axs[0].axis("off")
     # set title
     axs[0].set_title(names_temp[idx])
-    idx = random.randint(0, 7)
+    idx = random.randint(0, 1)
     axs[1].imshow(image[idx].cpu().permute(1, 2, 0).numpy())
     show_mask(gt[idx].cpu().numpy(), axs[1])
     show_box(bboxes[idx].numpy(), axs[1])
@@ -147,7 +148,7 @@ parser.add_argument(
     "-i",
     "--tr_npy_path",
     type=str,
-    default="data/npy/CT_Abd",
+    default=root + "npy/CT_Abd",
     help="path to training npy files; two subfolders: gts and imgs",
 )
 parser.add_argument("-task_name", type=str, default="MedSAM-ViT-B")
@@ -329,6 +330,7 @@ def main():
                 scaler.update()
                 optimizer.zero_grad()
             else:
+                print('call model', step)
                 medsam_pred = medsam_model(image, boxes_np)
                 loss = seg_loss(medsam_pred, gt2D) + ce_loss(medsam_pred, gt2D.float())
                 loss.backward()

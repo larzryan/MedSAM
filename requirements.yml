@@ -1,0 +1,17 @@
+name: medsam
+channels:
+  - conda-forge
+  - anaconda
+  - defaults
+dependencies:
+  - pytorch
+  - pytorch-cuda
+  - torchvision
+  - numpy
+  - pillow
+  - matplotlib
+  - PyQt5
+  - pip
+    - PyQt5
+    - connected-components-3d
+    - monai
